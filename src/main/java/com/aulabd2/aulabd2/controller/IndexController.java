@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.zapLivros.ZapLivros.model.Funcionario;
-import com.zapLivros.ZapLivros.model.FuncionarioService;
+import com.aulabd2.aulabd2.model.Funcionario;
+import com.aulabd2.aulabd2.model.FuncionarioService;
 
 @Controller
 public class IndexController {
