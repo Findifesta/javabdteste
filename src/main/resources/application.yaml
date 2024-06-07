@@ -3,12 +3,13 @@ server:
 
 spring:
     datasource:
-        url: jdbc:postgresql://dpg-cperjglds78s73flp9i0-a/fatecjava
-        username: postgres1
-        password: A57LGpxZCIO59qJKSIKfIteZB1B5xcfx
+        url: jdbc:postgresql://dpg-cph19puct0pc73a27hmg-a.oregon-postgres.render.com/zaplivrosbd
         driver-class-name: org.postgresql.Driver
+        username: zaplivros
+        password: 9yWmvAcE9IoIk8E9jt44G05odfaF0jbp
         initialize: true
-
+        schema: classpath:/schema-postgresql.sql
+        
     jpa: 
         hibernate:
             ddl-auto: create-drop
