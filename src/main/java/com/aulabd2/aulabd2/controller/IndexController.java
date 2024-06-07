@@ -4,45 +4,74 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import com.aulabd2.aulabd2.model.Cliente;
-import com.aulabd2.aulabd2.model.ClienteService;
+import com.zapLivros.ZapLivros.model.Funcionario;
+import com.zapLivros.ZapLivros.model.FuncionarioService;
 
 @Controller
 public class IndexController {
-    
-    @Autowired private ApplicationContext context;
 
-    @GetMapping("/")
-    public String index(){
-        return "index";
+    @Autowired
+    private FuncionarioService funcionarioService;
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "admin";
     }
 
-    @GetMapping("/cadastrar")
-    public String cadastrar(Model model){
-        model.addAttribute("cliente", new Cliente());
-        return "cadastro";
+    @GetMapping("/cadastroFuncionario")
+    public String cadastroFuncionario(Model model) {
+        model.addAttribute("funcionario", new Funcionario());
+        List<Map<String, Object>> funcionarios = funcionarioService.listarFuncionario();
+        model.addAttribute("lista", funcionarios);
+        return "cadastroFuncionario";
     }
 
-    @PostMapping("/cadastrar")
-    public String cadastrar(Model model, @ModelAttribute Cliente cli){
-        ClienteService cs = context.getBean(ClienteService.class);
-		cs.inserirCliente(cli);
-        return "sucesso";
+    @PostMapping("/cadastroFuncionario")
+    public String cadastroFuncionario(@ModelAttribute Funcionario fun,
+            @RequestParam("administrador") boolean administrador) {
+        fun.setCargo(administrador);
+        funcionarioService.inserirFuncionario(fun);
+        return "redirect:/cadastroFuncionario";
     }
 
-    @GetMapping("/listar")
-    public String listar(Model model){
-        ClienteService cs = context.getBean(ClienteService.class);
-        List<Map<String,Object>> lista = cs.listarClientes();
-        model.addAttribute("lista", lista);
-        return "lista";
+    @GetMapping("/editarFuncionario")
+    public String editarFuncionario(@RequestParam("id") int id, Model model) {
+        List<Map<String, Object>> funcionarios = funcionarioService.listarFuncionario();
+        Funcionario funcionario = funcionarios.stream()
+                .filter(map -> (Integer) map.get("id") == id)
+                .map(map -> new Funcionario(
+                        (Integer) map.get("id"),
+                        (String) map.get("nome"),
+                        (String) map.get("cpf"),
+                        (String) map.get("email"),
+                        (String) map.get("telefone"),
+                        (String) map.get("senha"),
+                        (Boolean) map.get("cargo")))
+                .findFirst()
+                .orElse(null);
+        model.addAttribute("funcionario", funcionario);
+        model.addAttribute("lista", funcionarios);
+        return "dadosFunc"; // Redireciona para a página de dadosFunc.html para edição
     }
 
+    @PostMapping("/alterarFuncionario")
+    public String alterarFuncionario(@ModelAttribute Funcionario fun,
+            @RequestParam("administrador") boolean administrador) {
+        fun.setCargo(administrador);
+        funcionarioService.alterarFuncionario(fun);
+        return "redirect:/cadastroFuncionario";
+    }
+
+    @PostMapping("/deletarFuncionario")
+    public String deletarFuncionario(@RequestParam("id") int id) {
+        funcionarioService.deletarFuncionario(id);
+        return "redirect:/cadastroFuncionario";
+    }
 }
